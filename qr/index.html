@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+            color: #444;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="file"], input[type="color"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        .checkbox-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #qr-container {
+            margin: 1.5rem 0;
+        }
+
+        #downloadBtn {
+            display: none;
+            margin-top: 1rem;
+            background-color: #28a745;
+        }
+
+        #downloadBtn:hover {
+            background-color: #218838;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Custom QR Code Generator</h2>
+
+        <label for="qrText">Enter Text for QR Code:</label>
+        <input type="text" id="qrText" placeholder="Enter text or URL">
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="addLogo">
+            <label for="addLogo">Add Logo</label>
+            <input type="file" id="logoUpload" accept="image/*" class="hidden">
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="selectColor">
+            <label for="selectColor">Select Color</label>
+            <input type="color" id="colorPicker" value="#000000" class="hidden">
+        </div>
+
+        <button onclick="generateQR()">Generate QR Code</button>
+
+        <div id="qr-container"></div>
+
+        <button id="downloadBtn" onclick="downloadQR()">Download QR Code</button>
+    </div>
+
+    <script>
+        document.getElementById("addLogo").addEventListener("change", function() {
+            document.getElementById("logoUpload").classList.toggle("hidden", !this.checked);
+        });
+
+        document.getElementById("selectColor").addEventListener("change", function() {
+            document.getElementById("colorPicker").classList.toggle("hidden", !this.checked);
+        });
+
+        function generateQR() {
+            let text = document.getElementById("qrText").value;
+            let color = document.getElementById("selectColor").checked ? document.getElementById("colorPicker").value : "#000000";
+            let qrContainer = document.getElementById("qr-container");
+            qrContainer.innerHTML = "";
+
+            if (!text) {
+                alert("Please enter text to generate QR code");
+                return;
+            }
+
+            let qrCode = new QRCode(qrContainer, {
+                text: text,
+                width: 200,
+                height: 200,
+                colorDark: color,
+                colorLight: "#ffffff"
+            });
+
+            document.getElementById("downloadBtn").style.display = "block";
+
+            // Handle logo addition
+            if (document.getElementById("addLogo").checked) {
+                let fileInput = document.getElementById("logoUpload");
+                if (fileInput.files.length > 0) {
+                    let img = new Image();
+                    let file = fileInput.files[0];
+                    let reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        img.src = e.target.result;
+                        img.onload = function() {
+                            let canvas = document.createElement("canvas");
+                            canvas.width = 200;
+                            canvas.height = 200;
+                            let ctx = canvas.getContext("2d");
+
+                            setTimeout(() => {
+                                let qrImage = new Image();
+                                qrImage.src = qrContainer.querySelector("img").src;
+                                qrImage.onload = function() {
+                                    ctx.drawImage(qrImage, 0, 0, 200, 200);
+                                    let logoSize = 50;
+                                    let x = (200 - logoSize) / 2;
+                                    let y = (200 - logoSize) / 2;
+                                    ctx.drawImage(img, x, y, logoSize, logoSize);
+                                    qrContainer.innerHTML = "";
+                                    let finalImg = new Image();
+                                    finalImg.src = canvas.toDataURL();
+                                    qrContainer.appendChild(finalImg);
+                                };
+                            }, 500);
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        function downloadQR() {
+            let qrContainer = document.getElementById("qr-container");
+            let img = qrContainer.querySelector("img");
+            if (!img) return;
+
+            let link = document.createElement("a");
+            link.href = img.src;
+            link.download = "QR_Code.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+
+</body>
+</html>
