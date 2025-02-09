@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aaron | Crypto & Spider-Verse Fan</title>
+
+    <!-- GSAP Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- FontAwesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0d0d0d;
+            color: white;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            user-select: none;  /* Disables text selection */
+        }
+
+        /* Spider-Verse Themed Intro */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: url('https://wallpapers.com/images/high/spider-man-into-the-spider-verse-art-lf8txgpk9dqktgwg.webp') no-repeat center center/cover;
+        }
+
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            font-size: 3rem;
+            color: #ffcc00;
+            text-shadow: 2px 2px 10px rgba(255, 0, 0, 0.8);
+            position: relative;
+            display: inline-block;
+            animation: glitch-anim 1.5s infinite;
+        }
+
+        .glitch:before, .glitch:after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: #ff8800;
+            clip: rect(0, 900px, 0, 0);
+            z-index: -1;
+            animation: glitch-anim 2s infinite;
+        }
+
+        .glitch:after {
+            color: #00ffcc;
+            clip: rect(0, 0, 0, 900px);
+            animation-delay: 0.5s;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                transform: translate(2px, -2px);
+            }
+            60% {
+                transform: translate(-3px, 3px);
+            }
+            80% {
+                transform: translate(3px, -3px);
+            }
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        .btn {
+            display: inline-block;
+            background: #ffcc00;
+            color: #0d0d0d;
+            padding: 12px 25px;
+            margin: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease, background 0.3s;
+        }
+
+        .btn:hover {
+            background: #ff8800;
+            transform: scale(1.1);
+        }
+
+        /* Button Focus/Active Removal */
+        .btn:focus, .btn:active {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* About Me Section */
+        .about {
+            text-align: center;
+            padding: 50px 20px;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        /* Channels Section */
+        .channels {
+            text-align: center;
+            margin: 40px 0;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .channel-btn {
+            display: block;
+            width: 80%;
+            max-width: 300px;
+            margin: 10px auto;
+            background: #ffcc00;
+            color: #0d0d0d;
+            padding: 12px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 10px;
+            text-align: center;
+            transition: background 0.3s ease, transform 0.3s;
+        }
+
+        .channel-btn:hover {
+            background: #ff8800;
+            transform: scale(1.05);
+        }
+
+        .channel-members {
+            font-size: 1.1rem;
+            color: #ffcc00;
+            margin-top: 5px;
+        }
+
+        /* Movie Section */
+        .movie-section {
+            text-align: center;
+            padding: 50px 20px;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .movie-poster {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+            transition: transform 0.3s ease;
+        }
+
+        .movie-poster:hover {
+            transform: scale(1.05);
+        }
+
+        /* Horizontal Scroll Container */
+        .scrolling-images {
+            display: flex;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .scrolling-images img {
+            margin-right: 15px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Contact Me Button */
+        .contact-section {
+            text-align: center;
+            padding: 50px 20px;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Spider-Man Inspired Hero Section -->
+    <div class="hero">
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <h1 class="glitch" data-text="Welcome to My World">Welcome to My World</h1>
+            <p>Crypto Enthusiast | Spider-Man Fan | Moderator</p>
+            <a href="#about" class="btn">Explore My Work</a>
+        </div>
+    </div>
+
+    <!-- About Me Section -->
+    <section id="about" class="about">
+        <h2>About Me</h2>
+        <p>I'm Aaron, a crypto enthusiast and a huge fan of the Spider-Verse.</p>
+        <p>CEO of Ethio Bounty & Moderator in top crypto communities.</p>
+    </section>
+
+    <!-- Crypto Channels Section with Member Counts -->
+    <section class="channels">
+        <h2>Channels I'm a Moderator In</h2>
+        <a href="https://t.me/QAirdrop2" class="channel-btn" target="_blank"><i class="fas fa-users"></i> Quietly Community</a>
+        <p class="channel-members">69K+ Members</p>
+
+        <a href="https://t.me/HahuCryptoEt" class="channel-btn" target="_blank"><i class="fas fa-users"></i> Hahu Crypto</a>
+        <p class="channel-members">34K+ Members</p>
+
+        <a href="https://t.me/zizaapp1" class="channel-btn" target="_blank"><i class="fas fa-users"></i> Ziza App</a>
+        <p class="channel-members">5K+ Members</p>
+
+        <a href="https://t.me/ethio_bounty" class="channel-btn" target="_blank"><i class="fas fa-users"></i> Ethio Bounty (CEO)</a>
+        <p class="channel-members">200+ Members</p>
+    </section>
+
+    <!-- Movie Section -->
+        <section id="movie" class="movie-section">
+            <h2>"Spider-Man: Across the Spider-Verse"</h2>
+            <p>The second part of the Spider-Verse adventure, starring Miles Morales.</p>
+            <img src="https://i.ibb.co/DPr1zKdm/Miles-Meetsthe-Spot.jpg" alt="Spider-Man Across the Spider-Verse" class="movie-poster">
+            <br>
+            <a href="https://www.imdb.com/title/tt9362722/" class="btn" target="_blank"><i class="fas fa-play"></i> Watch Movie</a>
+            <div class="scrolling-images">
+                <img src="https://i.ibb.co/C5C4bKcQ/GCEcuv-TXw-AA5-Dw-W.jpg" alt="Image 1">
+                <img src="https://i.ibb.co/svLB0pJw/Spider-Heroes.jpg" alt="Image 2">
+                <img src="https://i.ibb.co/vCrv84sw/Gwen-before-leaving-1610-1.jpg" alt="Image 3">
+                <img src="https://i.ibb.co/5hBT0zz6/ACROSS-THE-SPIDER-VERSE-r-ECORDS-1.png" alt="Image 4">
+                <img src="https://i.ibb.co/XZB5q76R/Firsttimeforeverythingright-1.jpg" alt="Image 5">
+                <img src="https://i.ibb.co/LdhMC97x/Miles-Surrounded.jpg" alt="Image 6">
+            </div>
+        </section>
+
+        <!-- Contact Me Section -->
+        <section id="contact" class="contact-section">
+            <h2>Contact Me</h2>
+            <p>Have questions or want to connect? Click below!</p>
+            <a href="https://t.me/yourusername" class="btn" target="_blank"><i class="fas fa-comments"></i> Message Me</a>
+        </section>
+
+        <script>
+            // GSAP Intro Animation
+            gsap.to(".hero-content", { opacity: 1, y: 0, duration: 1, delay: 0.5 });
+
+            // Scroll Animations
+            gsap.to(".about", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: ".about",
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            });
+
+            gsap.to(".channels", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: ".channels",
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            });
+
+            gsap.to(".movie-section", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: ".movie-section",
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            });
+
+            gsap.to(".contact-section", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: ".contact-section",
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            });
+        </script>
+
+</body>
+  </html>
