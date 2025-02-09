@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Confirmation</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script> 
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 360px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+        }
+        .success-icon {
+            width: 50px;
+            height: 50px;
+            background-image: url('https://i.ibb.co/HTwNgfbV/20250209-124129.png');
+            background-size: cover;
+            background-position: center;
+            margin: 20px auto 10px;
+        }
+        .success-text {
+            font-size: 14px;
+            color: #8DC73F;
+            margin-bottom: 20px;
+        }
+        .transaction-amount-label {
+            font-size: 15px;
+            color: #545454;
+            margin-bottom: 5px;
+        }
+        .transaction-amount {
+            font-size: 30px;
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .etb {
+            font-size: 11px;
+            font-weight: normal;
+            color: #545454;
+        }
+        .divider {
+            width: 100%;
+            border-top: 1px solid #ccc;
+            margin: 5px 0;
+        }
+        .transaction-details {
+            font-size: 12px;
+            color: #000;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+        }
+        .transaction-details p {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            width: 100%;
+        }
+        .left {
+            text-align: left;
+            font-weight: normal;
+            color: #8E8E8E;
+        }
+        .right {
+            text-align: right;
+            color: black;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 0;
+            width: 80%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .green-box {
+            width: 150px;
+            height: 150px;
+            background-color: #F7F7F7;
+            border-radius: 10px 10px 0 0; /* Rounded top corners only */
+            margin: 5px auto; /* Reduced margin to minimize gap */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* QR Code container with white stroke */
+        #qrcode {
+            padding: 7px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3>Enter Transaction Information</h3>
+
+    <label for="transactionTo">Transaction To:</label>
+    <input type="text" id="transactionTo" placeholder="e.g. Gelane"><br><br>
+
+    <label for="amount">Amount (ETB):</label>
+    <input type="text" id="amount" placeholder="e.g. -51.00"><br><br>
+
+    <button class="btn" onclick="generateTransaction()">Generate Transaction</button>
+</div>
+
+<div class="container" id="transactionConfirmation" style="display:none;">
+    <div class="success-icon"></div>
+    <p class="success-text">Successful</p>
+    <br>
+    <p class="transaction-amount-label">Payment Method</p>
+    <p class="transaction-amount" id="amountDisplay"></p>
+
+    <br><br>
+    <div class="divider"></div>
+    <div class="transaction-details">
+        <p><span class="left">Transaction Time:</span> <span class="right" id="transactionTimeDisplay"></span></p>
+        <p><span class="left">Transaction Type:</span> <span class="right" id="transactionTypeDisplay">Transfer Money</span></p>
+        <p><span class="left">Transaction To:</span> <span class="right" id="transactionToDisplay"></span></p>
+        <p><span class="left">Transaction Number:</span> <span class="right" id="transactionNumberDisplay"></span></p><br><br>
+    <div class="green-box">
+        <div id="qrcode"></div>
+    </div>
+    </div>
+</div>
+
+<script>
+    function generateTransaction() {
+        // Get input values
+        const transactionTo = document.getElementById("transactionTo").value;
+        const amount = document.getElementById("amount").value;
+
+        // Get current date and time in YYYY/MM/DD HH:MM:SS format
+        const now = new Date();
+        const formattedTime = now.getFullYear() + '/' +
+            String(now.getMonth() + 1).padStart(2, '0') + '/' +
+            String(now.getDate()).padStart(2, '0') + ' ' +
+            String(now.getHours()).padStart(2, '0') + ':' +
+            String(now.getMinutes()).padStart(2, '0') + ':' +
+            String(now.getSeconds()).padStart(2, '0');
+
+        // Generate random transaction number
+        const transactionNumber = generateTransactionNumber();
+
+        // Set the information to the generated section
+        document.getElementById("transactionTimeDisplay").innerText = formattedTime;
+        document.getElementById("transactionToDisplay").innerText = transactionTo;
+        document.getElementById("transactionNumberDisplay").innerText = transactionNumber;
+        document.getElementById("transactionTypeDisplay").innerText = "Transfer Money";
+        document.getElementById("amountDisplay").innerHTML = amount + ' <span class="etb">(ETB)</span>';
+
+        // Generate QR Code with transaction data
+        const qrCodeText = generateRandomString();
+        document.getElementById("qrcode").innerHTML = ""; // Clear previous QR code
+        new QRCode(document.getElementById("qrcode"), {
+            text: qrCodeText,
+            width: 115,
+            height: 115
+        });
+
+        // Show the transaction confirmation
+        document.getElementById("transactionConfirmation").style.display = "block";
+    }
+
+    function generateRandomString() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 25; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+    function generateTransactionNumber() {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const digits = '0123456789';
+        let result = '';
+        for (let i = 0; i < 2; i++) result += letters.charAt(Math.floor(Math.random() * letters.length));
+        for (let i = 0; i < 2; i++) result += digits.charAt(Math.floor(Math.random() * digits.length));
+        for (let i = 0; i < 5; i++) result += letters.charAt(Math.floor(Math.random() * letters.length));
+        return result;
+    }
+</script>
+
+</body>
+  </html>
