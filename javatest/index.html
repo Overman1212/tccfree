@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Proficiency Test</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        h1, h2, h3, p {
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #34495e;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        #start-button, #download-button {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 12px 24px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #start-button:hover, #download-button:hover {
+            background-color: #27ae60;
+            transform: scale(1.05);
+        }
+
+        #test-container, #certificate, .blank-page {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .question {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question p {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .question label {
+            display: block;
+            font-size: 18px;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .question label:hover {
+            background-color: #ecf0f1;
+        }
+
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-top: 10px;
+        }
+
+        #certificate h2 {
+            color: #2ecc71;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        #certificate p {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .blank-page {
+            display: none;
+            color: #e74c3c;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-content">
+        <h1>Java Proficiency Test</h1>
+        <button id="start-button">Start Test</button>
+        
+        <div id="test-container" style="display: none;">
+            <h2>Answer the following questions:</h2>
+            <form id="quiz-form">
+                <div class="question" id="q1">
+                    <p>1. What is the correct way to declare a variable in Java?</p>
+                    <label><input type="radio" name="q1" value="a"> int x = 10;</label>
+                    <label><input type="radio" name="q1" value="b"> int 10 = x;</label>
+                    <label><input type="radio" name="q1" value="c"> x = 10 int;</label>
+                    <div class="timer" id="timer-q1">30s</div>
+                </div>
+                <div class="question" id="q2">
+                    <p>2. What is the default value of an int variable in Java?</p>
+                    <label><input type="radio" name="q2" value="a"> 0</label>
+                    <label><input type="radio" name="q2" value="b"> null</label>
+                    <label><input type="radio" name="q2" value="c"> undefined</label>
+                    <div class="timer" id="timer-q2">30s</div>
+                </div>
+                <div class="question" id="q3">
+                    <p>3. Which of the following is used to create a method in Java?</p>
+                    <label><input type="radio" name="q3" value="a"> function</label>
+                    <label><input type="radio" name="q3" value="b"> void</label>
+                    <label><input type="radio" name="q3" value="c"> create</label>
+                    <div class="timer" id="timer-q3">30s</div>
+                </div>
+            </form>
+        </div>
+
+        <div id="certificate" style="display: none;">
+            <h2>Congratulations!</h2>
+            <p id="cert-name"></p>
+            <p>You have passed the Java Proficiency Test.</p>
+            <button id="download-button">Download Certificate</button>
+        </div>
+
+        <div class="blank-page" id="blank-page">
+            Test Attempted! Please try again later.
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            q1: "a",
+            q2: "a",
+            q3: "b"
+        };
+
+        let score = 0;
+        let currentQuestionIndex = 1;
+        let timer;
+        const totalQuestions = Object.keys(correctAnswers).length;
+
+        window.onload = function() {
+            const resultStatus = localStorage.getItem('testResult');
+            if (resultStatus === 'pass') {
+                showCertificate();
+            } else if (resultStatus === 'fail') {
+                showBlankPage();
+            }
+        };
+
+        document.getElementById("start-button").addEventListener("click", () => {
+            document.getElementById("start-button").style.display = "none";
+            document.getElementById("test-container").style.display = "block";
+            showQuestion(currentQuestionIndex);
+        });
+
+        document.querySelectorAll("input[type='radio']").forEach((radio) => {
+            radio.addEventListener("change", (e) => {
+                clearInterval(timer);
+                const currentQuestion = e.target.closest(".question");
+                const questionId = currentQuestion.id;
+
+                if (e.target.value === correctAnswers[questionId]) {
+                    score++;
+                }
+
+                currentQuestion.classList.remove("active");
+                currentQuestionIndex++;
+
+                if (currentQuestionIndex <= totalQuestions) {
+                    showQuestion(currentQuestionIndex);
+                } else {
+                    submitTest();
+                }
+            });
+        });
+
+        function showQuestion(index) {
+            const questionId = `q${index}`;
+            const question = document.getElementById(questionId);
+            if (question) {
+                question.classList.add("active");
+                startTimer(questionId);
+            }
+        }
+
+        function startTimer(questionId) {
+            let timeLeft = 30;
+            const timerElement = document.getElementById(`timer-${questionId}`);
+            timerElement.textContent = `${timeLeft}s`;
+
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `${timeLeft}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById(questionId).classList.remove("active");
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex <= totalQuestions) {
+                        showQuestion(currentQuestionIndex);
+                    } else {
+                        submitTest();
+                    }
+                }
+            }, 1000);
+        }
+
+        function submitTest() {
+            if (score > totalQuestions / 2) {
+                localStorage.setItem('testResult', 'pass');
+                const userName = prompt("Please enter your name for the certificate:");
+                document.getElementById("cert-name").textContent = `Name: ${userName}`;
+                showCertificate();
+            } else {
+                localStorage.setItem('testResult', 'fail');
+                alert("You didn't pass the test. Better luck next time!");
+                showBlankPage();
+            }
+        }
+
+        function showCertificate() {
+            document.getElementById("main-content").innerHTML = `
+                <div id="certificate">
+                    <h2>Congratulations!</h2>
+                    <p>You have passed the Java Proficiency Test.</p>
+                    <button id="download-button">Download Certificate</button>
+                </div>
+            `;
+
+            document.getElementById("download-button").addEventListener("click", () => {
+                alert("Certificate downloaded! (This is a placeholder action.)");
+            });
+        }
+
+        function showBlankPage() {
+            document.getElementById("main-content").innerHTML = `
+                <div class="blank-page">
+                    Test Attempted! Please try again later.
+                </div>
+            `;
+        }
+    </script>
+</body>
+                  </html>
