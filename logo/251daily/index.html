@@ -16,16 +16,12 @@
             margin: 20px auto;
             border: 1px solid #ddd;
         }
-        .controls {
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
 
     <h2>Change Image Color</h2>
-    <input type="color" id="colorPicker" value="#ff0000">
-    <button onclick="applyColor()">Apply Color</button>
+    <input type="color" id="colorPicker" value="#ff0000" onchange="applyColor()">
     <button onclick="downloadImage()">Download Image</button>
     
     <canvas id="imageCanvas"></canvas>
@@ -36,7 +32,7 @@
         const ctx = canvas.getContext("2d");
         const img = new Image();
 
-        img.crossOrigin = "anonymous"; // Allow cross-origin image processing
+        img.crossOrigin = ""; // Allow cross-origin image processing
         img.src = imgSrc;
         
         img.onload = function () {
@@ -47,6 +43,7 @@
 
         function applyColor() {
             const color = document.getElementById("colorPicker").value;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0);
             ctx.globalCompositeOperation = "source-atop";
             ctx.fillStyle = color;
